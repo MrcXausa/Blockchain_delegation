@@ -34,7 +34,7 @@ function EthProvider({ children }) {
   useEffect(() => {
     const tryInit = async () => {
       try {
-        const artifact = require("../../contracts/Delegation.json");
+        const artifact = require("../../contracts/Delega.json");
         init(artifact);
       } catch (err) {
         console.error(err);
