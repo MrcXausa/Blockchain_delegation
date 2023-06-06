@@ -10,6 +10,9 @@ function EthProvider({ children }) {
   const init = useCallback(
     async artifact => {
       if (artifact) {
+
+
+
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545"); //create a web3 instance with the provider
         const accounts = await web3.eth.requestAccounts(); //get accounts from metamask
 
@@ -28,6 +31,8 @@ function EthProvider({ children }) {
           type: actions.init,
           data: { artifact, web3, accounts,  contract }
         });
+
+
       }
     }, []);
 
@@ -42,6 +47,9 @@ function EthProvider({ children }) {
     };
 
     tryInit();
+
+   
+  
   }, [init]);
 
   useEffect(() => {

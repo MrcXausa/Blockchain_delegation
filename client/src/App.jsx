@@ -1,10 +1,12 @@
 import { EthProvider } from "./contexts/EthContext";
 import Formdelegation from "./components/Formdelegation"
+import Begin from "./components/Begin"
 
 function App() {
   return (
     <EthProvider>
-         <Formdelegation />
+      <Begin />
+      <Formdelegation />
     </EthProvider>
   );
 }
