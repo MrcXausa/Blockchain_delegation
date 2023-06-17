@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Registeruser from "./Registeruser";
 import Registerinstitution from "./Registerinstitution";
+import './Subscribe.css'
 
-function Begin(){
+function Subscribe(){
     
     const [display, setDisplay] = useState(true);
     const [content, setContent] = useState(<></>);
@@ -10,32 +11,34 @@ function Begin(){
 
     function handleClickUser(e){
         e.preventDefault();
-        setContent(<Registeruser />);
-        console.log("loading user's login page");
+        setContent(<Registeruser setDisplay={setDisplay}/>);
         setDisplay(false);
         
     }
     function handleClickInstitution(e){
         e.preventDefault();
-        setContent(<Registerinstitution />);
-        console.log("loading institution's login page");
+        setContent(<Registerinstitution setDisplay={setDisplay}/>);
         setDisplay(false);
         
     }
     
     const choiceScreen=<>
         <form >
-            <h1>What would you like to register as?</h1>
+            <h1>You're not registered? register now!</h1>
+            <br />
+            <br />
             <button onClick={handleClickUser} name="button" value="user">User</button>
+            <br />
+            <br />
             <button onClick={handleClickInstitution} name="button" value="institution">Institution</button>
         </form>
     </>
 
     return (
-        <>
-        { display ? choiceScreen : content }
-        </>
+        <div className="login-wrapper">
+            { display ? choiceScreen : content }
+        </div>
     );
 }
 
-export default Begin;
+export default Subscribe;

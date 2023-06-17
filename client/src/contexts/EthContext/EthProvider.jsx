@@ -17,13 +17,11 @@ function EthProvider({ children }) {
         const accounts = await web3.eth.requestAccounts(); //get accounts from metamask
 
         const networkID = await web3.eth.net.getId();
-        console.log("accounts="+accounts);
         const { abi } = artifact;
         let contract,address;
         try {
           address=artifact.networks[networkID].address;
           contract = new web3.eth.Contract(abi,address);
-          console.log(contract);
         } catch (err) {
           console.error(err);
         }
