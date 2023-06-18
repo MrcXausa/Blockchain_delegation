@@ -13,15 +13,26 @@ function App() {
   const [loginUser,setLoginUser]=useState(false);
   const [loginInstitution,setLoginInstitution]=useState(false);
 
+  const [user,setUser]=useState({
+    name:null,
+    surname:null,
+    taxcode:null
+  });
+  
+  const [institution,setInstitution]=useState({
+    name:null,
+    vat:null
+  })
+
   return (
     <EthProvider>
       <div>
         <BrowserRouter>
           <Routes>
 
-            <Route path="/" element={<Dashboard setLoginUser={setLoginUser} setLoginInstitution={setLoginInstitution}/>}/>
-            <Route path="/user" element={<Userpage authenticated={loginUser}/>}/>
-            <Route path="/institution" element={<Institutionpage authenticated={loginInstitution}/>}/>
+            <Route path="/" element={<Dashboard setUser={setUser} setInstitution={setInstitution} setLoginUser={setLoginUser} setLoginInstitution={setLoginInstitution}/>}/>
+            <Route path="/user" element={<Userpage authenticated={loginUser} user={user}/>}/>
+            <Route path="/institution" element={<Institutionpage authenticated={loginInstitution} institution={institution}/>}/>
             <Route path="/error" element={<Error/>}/>
             <Route path="*" element={<Navigate to="/" />} />
 

@@ -11,7 +11,7 @@ function EthProvider({ children }) {
     async artifact => {
       if (artifact) {
 
-
+        
 
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545"); //create a web3 instance with the provider
         const accounts = await web3.eth.requestAccounts(); //get accounts from metamask

@@ -6,7 +6,8 @@ const userSchema = new Schema({
   surname: String,
   taxcode: String,
   email: String,
-  password: String
+  password: String,
+  address:String
 }, {
     collection: 'users'
 });

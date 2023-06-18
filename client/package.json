@@ -7,6 +7,7 @@
     "start": "webpack serve"
   },
   "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.12",
     "bootstrap": "^5.3.0",
     "dotenv": "^16.2.0",
     "node-polyfill-webpack-plugin": "^2.0.1",

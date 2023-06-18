@@ -3,9 +3,12 @@ const { Schema } = mongoose;
 
 const institutionSchema = new Schema({
   name:  String,
-  piva: String,
+  vat: String,
   email: String,
-  password:String
+  password: String,
+  services: [String],
+  privatekey: String,
+  address:String
 }, {
     collection: 'institutions'
 });

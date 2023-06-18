@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Institution = require('./models/Institution');
 const cors = require('cors');
+const CryptoJS=require('crypto-js');
+
 require('dotenv').config();
 
 //instantiating app
@@ -20,11 +22,10 @@ app.post("/registeruser",async (req,res)=>{
   let email= req.body.email;
   let taxcode= req.body.taxcode;
   let password= req.body.password;
+  let address= req.body.address;
 
-  //console.log(req.body);
-  //console.log(name+" "+surname+" "+email+" "+taxcode+" "+password);
 
-  if(!name || !surname || !email || !taxcode || !password){ //if some data are not present abort
+  if(!name || !surname || !email || !taxcode || !password || !address){ //if some data are not present abort
     res.status(200).send({
       stored:false,
       error:"missing parameters"
@@ -32,7 +33,7 @@ app.post("/registeruser",async (req,res)=>{
     return
   }
 
-  if(await User.findOne({taxcode:taxcode}) || await User.findOne({email:email})){ //if a user with that taxcode already exists
+  if(await User.findOne({taxcode:taxcode}) || await User.findOne({email:email}) || await User.findOne({address:address})){ //if a user with that taxcode already exists
     res.status(200).send({
       stored:false,
       error:"already exist"
@@ -46,7 +47,8 @@ app.post("/registeruser",async (req,res)=>{
       surname:surname,
       email:email,
       taxcode:taxcode,
-      password:password
+      password:password,
+      address:address
   });
 
   user.save(); 
@@ -63,18 +65,19 @@ app.post("/registeruser",async (req,res)=>{
 app.post("/registerinstitution",async (req,res)=>{
 
   let name= req.body.name;
-  let piva= req.body.piva;
+  let vat= req.body.vat;
   let email= req.body.email;
   let password= req.body.password;
+  let address= req.body.address;
 
-  if(!name || !piva || !email ||  !password){ //if some data are not present abort
+  if(!name || !vat || !email ||  !password || !address){ //if some data are not present abort
     res.status(200).send({
       stored:false,
       error:"missing parameters"
     });
     return
   }
-  if(await Institution.findOne({piva:piva}) || await Institution.findOne({email:email})){ //if a user with that taxcode already exists
+  if(await Institution.findOne({vat:vat}) || await Institution.findOne({email:email}) || await Institution.findOne({address:address})){ //if a user with that taxcode already exists
     res.status(200).send({
       stored:false,
       error:"already exist"
@@ -82,14 +85,17 @@ app.post("/registerinstitution",async (req,res)=>{
     return
   }
 
-  //if all the data are present, store the institution
+  //if all the data are present, store the institution and create a random key
 
   let institution=new Institution({
     name:name,
     email:email,
-    piva:piva,
-    password:password
+    vat:vat,
+    password:password,
+    privatekey: generateKey(15),
+    address:address
   });
+
 
   institution.save(); 
   console.log("new institution correctly stored");
@@ -99,17 +105,96 @@ app.post("/registerinstitution",async (req,res)=>{
   });
 });
 
+app.post("/rollbackuser",async (req,res)=>{
+
+  let taxcode= req.body.taxcode;
+
+  if( !taxcode ){ //if some data are not present abort
+    res.status(200).send({
+      error:"missing parameters"
+    });
+    return
+  }
+
+
+  if(await User.deleteOne({taxcode:taxcode})){  //remove the user
+    res.status(200).send({rollebacked:true});
+    console.log("user rollebacked");
+    return
+  }
+
+  res.status(200).send({rollebacked:false});
+
+});
+
+app.post("/rollbackinstitution",async (req,res)=>{
+
+  let vat= req.body.vat;
+
+  if( !vat ){ //if some data are not present abort
+    res.status(200).send({
+      error:"missing parameters"
+    });
+    return
+  }
+
+
+  if(await Institution.deleteOne({vat:vat})){  //remove the institution
+    res.status(200).send({rollebacked:true});
+    console.log("institution rollebacked");
+    return
+  }
+
+  res.status(200).send({rollebacked:false});
+
+});
+
+app.post("/rollbackservice",async (req,res)=>{
+  let vat= req.body.vat;
+  let service= req.body.service;
+
+  if( !vat  || !service){ //if some data are not present abort
+    res.status(200).send({
+      error:"missing parameters"
+    });
+    return
+  }
+
+  
+  if(await Institution.updateOne({vat: vat },{ $pull: { 'services': service } })){  //remove the institution
+    res.status(200).send({rollebacked:true});
+    console.log("service rollebacked");
+    return
+  }
+
+  res.status(200).send({rollebacked:false});
+
+});
+
 app.post("/authenticate",async (req,res)=>{
 
   let email= req.body.email;
   let password= req.body.password;
+  let address=req.body.address;
 
-  if(await User.findOne({email:email, password:password})){
-      res.status(200).send({authenticated:true, account:'user'});
+  let user=await User.findOne({email:email, password:password, address:address});
+  let institution= await Institution.findOne({email:email, password:password, address:address});
+
+  if(user){
+      let data={
+        name:user.name,
+        surname:user.surname,
+        taxcode:user.taxcode
+      }
+      res.status(200).send({authenticated:true, account:'user', data:data});
       return
   }
-  if(await Institution.findOne({email:email, password:password})){
-    res.status(200).send({authenticated:true, account:'institution'});
+  if(institution){
+    let data={
+      name:institution.name,
+      vat:institution.vat
+    }
+    res.status(200).send({authenticated:true, account:'institution',data:data});
     return
   }
 
@@ -117,6 +202,89 @@ app.post("/authenticate",async (req,res)=>{
 });
 
 
+app.post("/addservice",async (req,res)=>{
+
+  let vat= req.body.vat;
+  let service= req.body.service;
+
+  if(!vat || ! service){
+    res.status(200).send({ error: "missing parameters"});
+    return;
+  }
+
+  const institution = await Institution.findOne({ vat: vat });
+
+  console
+
+  if (institution) {
+    institution.services.push(service);
+    await institution.save(); 
+
+    res.status(200).send({ stored: true});
+    return;
+  }
+  res.status(200).send({stored:false});
+});
+
+app.get("/institutions",async (req,res)=>{
+  let institutions=await Institution.find();
+  if(institutions){
+    res.status(200).send({ error:false, institutions: institutions});
+    return;
+  }
+  res.status(200).send({ error:true});
+
+});
+
+app.post("/services",async (req,res)=>{
+  let vat= req.body.vat;
+
+  if(!vat){
+    res.status(200).send({ error: "missing parameters"});
+    return;
+  }
+
+  let institution=await Institution.findOne({vat:vat}).exec();;
+  if (institution){
+    res.status(200).send({ error:false, services: institution.services});
+    return;
+  }
+  res.status(200).send({ error:true});
+});
+
+
+app.post("/encode",async (req,res)=>{
+  let vat= req.body.vat;
+  let taxcode= req.body.taxcode;
+  let service= req.body.service;
+
+  if(!vat || !service || !taxcode){
+    res.status(200).send({ error: "missing parameters"});
+    return;
+  }
+
+  let institution=await Institution.findOne({vat:vat}).exec();
+
+  if (institution){
+    let plaintext=institution.vat+taxcode+service;
+    let encoded= CryptoJS.RC4.encrypt(plaintext, institution.privatekey).toString(); //encrypt
+    res.status(200).send({ error:false, encoded: encoded});
+    return;
+  }
+  res.status(200).send({ error:true});
+});
+
+function generateKey(length) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
 
 
 
