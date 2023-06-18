@@ -10,7 +10,6 @@ This application is made of different parts:
 To run the frontend:
 
 ```sh
-# Install Truffle globally and run `truffle unbox`
 $ cd client 
 $ npm install
 $ npm start
@@ -18,7 +17,6 @@ $ npm start
 
 To run the API:
 ```sh
-# Install Truffle globally and run `truffle unbox`
 $ cd api 
 $ npm install
 $ npm start
@@ -26,7 +24,6 @@ $ npm start
 
 To deploy the contract:
 ```sh
-# Install Truffle globally and run `truffle unbox`
 $ cd truffle 
 $ npm install
 $ truffle migrate --network development
