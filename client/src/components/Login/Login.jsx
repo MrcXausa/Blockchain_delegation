@@ -40,12 +40,14 @@ export default function Login({setUser,setInstitution,setLoginUser,setLoginInsti
           setUser({
             name:res.data.name,
             surname:res.data.surname,
-            taxcode:res.data.taxcode
+            taxcode:res.data.taxcode,
+            address:res.data.address
           });
           setLoginInstitution(false);
           setInstitution({
             name:null,
-            vat:null
+            vat:null,
+            address:null
           })
           navigate("/user"); // Redirect to /user route
         }
@@ -54,13 +56,15 @@ export default function Login({setUser,setInstitution,setLoginUser,setLoginInsti
           setLoginInstitution(true);
           setInstitution({
             name:res.data.name,
-            vat:res.data.vat
+            vat:res.data.vat,
+            address:res.data.address
           })
           setLoginUser(false);
           setUser({
             name:null,
             surname:null,
-            taxcode:null
+            taxcode:null,
+            address:null
           })
           navigate("/institution"); // Redirect to /institution route
         }

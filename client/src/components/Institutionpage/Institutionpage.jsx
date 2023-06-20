@@ -37,16 +37,21 @@ function Institutionpage({authenticated,institution}){
         .then(async (response) => {
             console.log(response);
             if(response.stored){
-                await contract.methods.addService(service).send({ from: accounts[0]  })
-                .then(()=>alert("service added"))
-                .catch((err)=>{
-                    alert("contract not signed");
-                    fetch("http://localhost:3000/rollbackservice",{
-                        method:'POST',
-                        headers: { "Content-Type": "application/json" },
-                        body:JSON.stringify({vat:vat,service:service})
+                if(accounts[0]==institution.address){
+                    await contract.methods.addService(service).send({ from: accounts[0]  })
+                    .then(()=>alert("service added"))
+                    .catch((err)=>{
+                        alert("contract not signed");
+                        fetch("http://localhost:3000/rollbackservice",{
+                            method:'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body:JSON.stringify({vat:vat,service:service})
+                        });
                     });
-                });
+                }
+                else    
+                    alert("wrong account on metamask");
+               
             }
 
             

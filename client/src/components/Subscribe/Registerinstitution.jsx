@@ -36,7 +36,7 @@ function RegisterInstitution({setDisplay}){
                 alert("Institution has not been created. Error:"+response.error);
             else{
                 await contract.methods.addInstitution(accounts[0]).send({ from: accounts[0]  })
-                .then(()=>alert("account created, login above"))
+                .then((res)=>{alert("account created, login above");console.log(res)})
                 .catch((err)=>{
                     alert("contract not signed");
                     fetch("http://localhost:3000/rollbackinstitution",{

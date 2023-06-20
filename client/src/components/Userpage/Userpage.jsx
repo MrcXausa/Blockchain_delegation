@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 function Userpage({authenticated,user}){
     const { state: { contract, accounts } } = useEth();
     const [options, setOptions]=useState(<></>);
+    const [services, setServices]=useState(<></>);
+    const [services1, setServices1]=useState(<></>);
     const [loaded, setLoaded]=useState(false);
+
     const navigate=useNavigate();
 
     useEffect(()=>{
@@ -28,6 +31,27 @@ function Userpage({authenticated,user}){
                     sup.push(<option value={JSON.stringify(value)} >{institutions[i].name} </option>);
                 }
                 setOptions(sup);
+
+                let toBeSent={
+                    vat:res.institutions[0].vat
+                }
+        
+                fetch("http://localhost:3000/services",{
+                    method:'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body:JSON.stringify(toBeSent)
+                }) 
+                .then(response => {
+                    return response.json();
+                })
+                .then((res)=>{
+                    let sup=[];
+                    for (let i=0;i<res.services.length;i++){
+                        sup.push(<option value={res.services[i]} >{res.services[i]} </option>);
+                    }
+                    setServices(sup);
+                    setServices1(sup);
+                })
             })
             setLoaded(true);
         }
@@ -64,11 +88,16 @@ function Userpage({authenticated,user}){
         else{
             let encodedservice=res.encoded;
             console.log(encodedservice);
-            contract.methods.delegate(address,institutionAddress,encodedservice).send({ from: accounts[0] })
-            .then((res)=>{
-                alert("Delegation approved!");  
-            })
-            .catch((err)=>{alert("Contract not signed");});
+            if(accounts[0]==user.address){
+                contract.methods.delegate(address,institutionAddress,encodedservice).send({ from: accounts[0] })
+                .then((res)=>{
+                    alert("Delegation approved!");  
+                })
+                .catch((err)=>{alert("Contract not signed");});
+            }
+            else
+                alert("wrong account on metamask");
+           
         }
 
        
@@ -89,6 +118,59 @@ function Userpage({authenticated,user}){
         .catch((err)=>{console.log("error"); console.log(err)});
     }
 
+
+    function handleChange(e){
+        e.preventDefault();
+
+        let vat=JSON.parse(e.target.value).vat;
+
+        let toBeSent={
+            vat:vat
+        }
+
+        fetch("http://localhost:3000/services",{
+            method:'POST',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(toBeSent)
+        }) 
+        .then(response => {
+            return response.json();
+        })
+        .then((res)=>{
+            let sup=[];
+            for (let i=0;i<res.services.length;i++){
+                sup.push(<option value={res.services[i]} >{res.services[i]} </option>);
+            }
+            setServices(sup);
+        })
+    }
+
+    function handleChange1(e){
+        e.preventDefault();
+
+        let vat=JSON.parse(e.target.value).vat;
+
+        let toBeSent={
+            vat:vat
+        }
+
+        fetch("http://localhost:3000/services",{
+            method:'POST',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(toBeSent)
+        }) 
+        .then(response => {
+            return response.json();
+        })
+        .then((res)=>{
+            let sup=[];
+            for (let i=0;i<res.services.length;i++){
+                sup.push(<option value={res.services[i]} >{res.services[i]} </option>);
+            }
+            setServices1(sup);
+        })
+    }
+
     return (
         <div className="user-wrapper">
             <form onSubmit={handleSubmit1}>
@@ -100,13 +182,15 @@ function Userpage({authenticated,user}){
                 <br />
                 <label>vat of company to delegate:</label>
                 <br />
-                <select name="vat" >
+                <select name="vat" onChange={handleChange}>
                     {options}
                 </select>
                 <br />
                 <label>service to delegate:</label>
                 <br />
-                <input type="text" name="service" />
+                <select name="service">
+                    {services}
+                </select>
                 <br />
                 <br />
                 <button type="submit">delegate</button>
@@ -122,13 +206,15 @@ function Userpage({authenticated,user}){
                 <br />
                 <label>vat of company to delegate:</label>
                 <br />
-                <select name="vat" >
+                <select name="vat" onChange={handleChange1}>
                     {options}
                 </select>
                 <br />
                 <label>service:</label>
                 <br />
-                <input type="text" name="service" />
+                <select name="service">
+                    {services1}
+                </select>
                 <br />
                 <br />
                 <button type="submit">check delegation</button>

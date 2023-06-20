@@ -16,12 +16,14 @@ function App() {
   const [user,setUser]=useState({
     name:null,
     surname:null,
-    taxcode:null
+    taxcode:null,
+    address:null
   });
   
   const [institution,setInstitution]=useState({
     name:null,
-    vat:null
+    vat:null,
+    address:null
   })
 
   return (
@@ -34,7 +36,8 @@ function App() {
             <Route path="/user" element={<Userpage authenticated={loginUser} user={user}/>}/>
             <Route path="/institution" element={<Institutionpage authenticated={loginInstitution} institution={institution}/>}/>
             <Route path="/error" element={<Error/>}/>
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/" />} exact />
+
 
           </Routes>
         </BrowserRouter>

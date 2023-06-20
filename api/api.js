@@ -184,7 +184,8 @@ app.post("/authenticate",async (req,res)=>{
       let data={
         name:user.name,
         surname:user.surname,
-        taxcode:user.taxcode
+        taxcode:user.taxcode,
+        address:user.address
       }
       res.status(200).send({authenticated:true, account:'user', data:data});
       return
@@ -192,7 +193,8 @@ app.post("/authenticate",async (req,res)=>{
   if(institution){
     let data={
       name:institution.name,
-      vat:institution.vat
+      vat:institution.vat,
+      address:institution.address
     }
     res.status(200).send({authenticated:true, account:'institution',data:data});
     return
