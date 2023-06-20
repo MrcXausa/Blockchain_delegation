@@ -4,7 +4,7 @@ const User = require('./models/User');
 const Institution = require('./models/Institution');
 const cors = require('cors');
 const CryptoJS=require('crypto-js');
-
+//TODO delete: comment to try push with ssh
 require('dotenv').config();
 
 //instantiating app
