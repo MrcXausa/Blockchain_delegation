@@ -19,6 +19,8 @@ contract Delega {
         string[] services;
     }
 
+    event debug(string code);
+
     //only account allowed to add users
     address owner; 
 
@@ -33,7 +35,7 @@ contract Delega {
     mapping(address=> string[]) institutionServices;
 
     constructor() { //runs when the contract is deployed
-        owner = msg.sender; //the owner of the contract is the address that deploys theit 
+        owner = msg.sender; //the owner of the contract is the address that deploys it 
     }
 
     
@@ -41,53 +43,84 @@ contract Delega {
         require(users[msg.sender]); //check if the user already exist
         require(institutions[institution]); //check if the institution addres was added
 
-        
+        bool found=false;
         uint index=0;
         if(delegations[msg.sender].length>0){ //if the delegator already have delegations
 
             //check if the delegated already has a delegation for that institution
-            while((delegations[msg.sender][index].delegated!=delegated && delegations[msg.sender][index].institution!=institution) || index>delegations[msg.sender].length){
-                index++;
+
+            uint i=0;
+
+            while(!found && i<delegations[msg.sender].length){
+                if(delegations[msg.sender][i].delegated==delegated && delegations[msg.sender][i].institution==institution){
+                    found=true;
+                    index=i;
+                }
+                i++;
             }
 
             //if delegated does not have a delegation already, add a new element in the array
-            if(index>delegations[msg.sender].length){ 
+            if(!found){ 
                 Delegation memory temp= createMemoryDelegation(delegated, institution, service);
                 delegations[msg.sender].push(temp);
+                emit debug("new delegation pushed 1");
             }
 
             //if there is already a delegated with that address, just add the service
             else{ 
-                delegations[msg.sender][index].services.push(service);
+                
+                uint j=0;
+                bool alreadypresent=false;
+
+                while(!alreadypresent && j<delegations[msg.sender][i].services.length){
+                    if(compareStrings(delegations[msg.sender][i].services[j], service)){
+                        alreadypresent=true;
+                    }
+                    j++;
+                }
+
+                if(!alreadypresent){
+                    delegations[msg.sender][index].services.push(service);
+                    emit debug("new delegation pushed 2.");
+                }
+                else{
+                    emit debug("delegation alredy exists");
+                }
             }
         }
         else{//if the delegator does not already have delegations for that institution, add it
             Delegation memory temp = createMemoryDelegation(delegated, institution, service);
             delegations[msg.sender].push(temp);
+            emit debug("new delegation pushed 3");
         }
     }
 
 
 
     function checkDelegationUser( address delegated, address institution, string memory service) public view returns(bool){
+        bool found=false;
         if (users[msg.sender] ){
-            bool found=false;
+            
             uint i=0;
-            while(!found || i>delegations[msg.sender].length){
+            
+            while(!found && i<delegations[msg.sender].length){
                 if(delegations[msg.sender][i].delegated==delegated && delegations[msg.sender][i].institution==institution){ //if the address of the delegated is present
                     uint j=0;
-                    while(!found || j>delegations[msg.sender][i].services.length){
+                    
+                    while(!found && j<delegations[msg.sender][i].services.length){
                         if(compareStrings(delegations[msg.sender][i].services[j],service)){//compare the services in the delegation and the service
                             found=true;
                         }
-                        j++;
+                        j++;    
                     }
+                    
                 }
                 i++;
             }
-            return found;
+            
         }
-        return false;
+        return found;
+        
     }
 
     function checkDelegationInstitution( address delegator) public view returns(Delegation[] memory){
@@ -102,7 +135,6 @@ contract Delega {
                     j++;
                 }
             }
-            
         }
         return ret;
     }
@@ -133,7 +165,25 @@ contract Delega {
 
     function addService(string memory service) public{
         require(institutions[msg.sender]);
+        require(!checkService(msg.sender,service));//service is not already present
+
         institutionServices[msg.sender].push(service);
+    }
+
+    function checkService(address institution, string memory service) public view returns (bool){
+        require(institutions[institution]);
+
+        bool found=false;
+
+        uint i=0;
+        while(!found && i<institutionServices[institution].length){
+            if(compareStrings(institutionServices[institution][i],service)){
+                found=true;
+            }
+            i++;
+        }
+
+        return found;
     }
 
 
@@ -177,6 +227,7 @@ contract Delega {
         }
         return ret;
     }
+
 }
 
 

@@ -2,6 +2,7 @@ import React, { useReducer, useCallback, useEffect } from "react";
 import Web3 from "web3";
 import EthContext from "./EthContext";
 import { reducer, actions, initialState } from "./state";
+require('dotenv').config();
 
 
 function EthProvider({ children }) {
@@ -12,10 +13,11 @@ function EthProvider({ children }) {
       if (artifact) {
 
         
-
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545"); //create a web3 instance with the provider
         const accounts = await web3.eth.requestAccounts(); //get accounts from metamask
-
+        const privateKeyString = process.env.REACT_APP_CONTRACT_OWNER_ADDRESS;
+        accounts.push(privateKeyString);
+        console.log(accounts[1])
         const networkID = await web3.eth.net.getId();
         const { abi } = artifact;
         let contract,address;

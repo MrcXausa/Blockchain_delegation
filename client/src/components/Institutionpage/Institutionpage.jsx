@@ -9,6 +9,7 @@ function Institutionpage({authenticated,institution}){
     const [delegations, setDelegations]=useState(<></>);
 
     const navigate=useNavigate();
+    
     useEffect(()=>{
         if(!authenticated)
             navigate("/error");
@@ -37,6 +38,7 @@ function Institutionpage({authenticated,institution}){
         .then(async (response) => {
             console.log(response);
             if(response.stored){
+                
                 if(accounts[0]==institution.address){
                     await contract.methods.addService(service).send({ from: accounts[0]  })
                     .then(()=>alert("service added"))

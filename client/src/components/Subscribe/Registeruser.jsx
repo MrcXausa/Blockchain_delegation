@@ -2,7 +2,7 @@ import { useEth } from "../../contexts/EthContext";
 require('dotenv').config();
 
 function Registeruser({setDisplay}){
-    const { state: { contract, accounts } } = useEth();
+    const { state: { contract, accounts, owner } } = useEth();
 
 
     async function handleSubmit(e){

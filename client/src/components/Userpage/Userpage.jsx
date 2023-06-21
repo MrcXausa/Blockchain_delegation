@@ -86,17 +86,45 @@ function Userpage({authenticated,user}){
             alert("error occurred, try again");
         }
         else{
-            let encodedservice=res.encoded;
-            console.log(encodedservice);
-            if(accounts[0]==user.address){
-                contract.methods.delegate(address,institutionAddress,encodedservice).send({ from: accounts[0] })
-                .then((res)=>{
-                    alert("Delegation approved!");  
-                })
-                .catch((err)=>{alert("Contract not signed");});
+            let isValid=await contract.methods.checkService(institutionAddress,service).call({ from: accounts[0]  })
+            console.log("isvalid: "+isValid);
+            if(isValid){
+                let encodedservice=res.encoded;
+                console.log("encodedservice check delegation: "+encodedservice);
+                if(accounts[0]==user.address){
+                    contract.events.debug(options, (error, event) => {
+                        if (error) {
+                          console.error("Error:", error);
+                          return;
+                        }
+                      
+                        // Handle the event data
+                        console.log("Event received:", event.returnValues);
+                      })
+                      .on("data", (event) => {
+                        if(event.code=="delegation alredy exists")
+                            alert("delegation alredy exists");
+                        console.log(event);
+                      })
+                      .on("changed", (event) => {
+                        // Handle events that were removed from the blockchain
+                      })
+                      .on("error", (error) => {
+                        console.error("Error:", error);
+                      });
+                    contract.methods.delegate(address,institutionAddress,encodedservice).send({ from: accounts[0] })
+                    .on("receipt", (receipt) => {
+                        // Transaction successful, now read the return value from events
+                        const returnValue = receipt.events.DelegateReturnValue.returnValues.returnValue;
+                        console.log("returnvalue: "+returnValue);
+                    });
+                }
+                else
+                    alert("wrong account on metamask");
             }
             else
-                alert("wrong account on metamask");
+                alert("service not found in the contract");
+   
            
         }
 
@@ -107,15 +135,42 @@ function Userpage({authenticated,user}){
         e.preventDefault();
         let address =e.target.delegated_address.value;
         let service=e.target.service.value;
+        let vat=JSON.parse(e.target.vat.value).vat;
         let institutionAddress=JSON.parse(e.target.vat.value).address;
-        contract.methods.checkDelegationUser(address,institutionAddress,service).call({ from: accounts[0] })
-        .then((res)=>{
-            if(res)
-                alert("Delegation permitted: "+res);
-            else
-                alert("Delegation not permitted");
+
+        let toBeSent={
+            vat:vat,
+            taxcode:user.taxcode,
+            service:service
+        }
+        console.log(toBeSent)
+
+        let res= await fetch("http://localhost:3000/encode",{
+            method:'POST',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(toBeSent)
+        }) .then(response => {
+            return response.json();
+            
         })
-        .catch((err)=>{console.log("error"); console.log(err)});
+
+
+        if(res.error){
+            alert("error occurred, try again");
+        }
+        else{
+            let encodedservice=res.encoded;
+            console.log("encodedservice check delegation: "+encodedservice);
+            contract.methods.checkDelegationUser(address,institutionAddress,encodedservice).call({ from: accounts[0] })
+            .then((res)=>{
+                if(res)
+                    alert("Delegation permitted: "+res);
+                else
+                    alert("Delegation not permitted");
+            })
+            .catch((err)=>{console.log("error"); console.log(err)});
+        }
+       
     }
 
 

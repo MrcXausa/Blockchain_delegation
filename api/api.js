@@ -33,7 +33,7 @@ app.post("/registeruser",async (req,res)=>{
     return
   }
 
-  if(await User.findOne({taxcode:taxcode}) || await User.findOne({email:email}) || await User.findOne({address:address})){ //if a user with that taxcode already exists
+  if(await User.findOne({taxcode:taxcode}) || await User.findOne({email:email}) || await User.findOne({address:address}) || await Institution.findOne({address:address}) || await Institution.findOne({email:email})){ //if a user with that taxcode already exists
     res.status(200).send({
       stored:false,
       error:"already exist"
@@ -77,7 +77,7 @@ app.post("/registerinstitution",async (req,res)=>{
     });
     return
   }
-  if(await Institution.findOne({vat:vat}) || await Institution.findOne({email:email}) || await Institution.findOne({address:address})){ //if a user with that taxcode already exists
+  if(await Institution.findOne({vat:vat}) || await Institution.findOne({email:email}) || await Institution.findOne({address:address}) || await User.findOne({email:email}) || await User.findOne({address:address})){ //if a user with that taxcode already exists
     res.status(200).send({
       stored:false,
       error:"already exist"
@@ -256,6 +256,7 @@ app.post("/services",async (req,res)=>{
 
 
 app.post("/encode",async (req,res)=>{
+  
   let vat= req.body.vat;
   let taxcode= req.body.taxcode;
   let service= req.body.service;
@@ -269,8 +270,19 @@ app.post("/encode",async (req,res)=>{
 
   if (institution){
     let plaintext=institution.vat+taxcode+service;
-    let encoded= CryptoJS.RC4.encrypt(plaintext, institution.privatekey).toString(); //encrypt
+
+    let key= CryptoJS.enc.Utf8.parse(institution.privatekey);
+    var iv = CryptoJS.enc.Utf8.parse("iv");
+
+    let encoded= CryptoJS.AES.encrypt(plaintext,key , {
+      keySize: 16,
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    }).toString(); //encrypt
+    
     res.status(200).send({ error:false, encoded: encoded});
+
     return;
   }
   res.status(200).send({ error:true});
