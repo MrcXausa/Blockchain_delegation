@@ -4,10 +4,12 @@ import './Userpage.css'
 import { useEffect, useState } from "react";
 
 function Userpage({authenticated,user}){
+
     const { state: { contract, accounts } } = useEth();
     const [options, setOptions]=useState(<></>);
     const [services, setServices]=useState(<></>);
     const [services1, setServices1]=useState(<></>);
+    const [delegations, setDelegations]=useState(<></>);
     const [loaded, setLoaded]=useState(false);
 
     const navigate=useNavigate();
@@ -101,23 +103,15 @@ function Userpage({authenticated,user}){
                         // Handle the event data
                         console.log("Event received:", event.returnValues);
                       })
-                      .on("data", (event) => {
-                        if(event.code=="delegation alredy exists")
-                            alert("delegation alredy exists");
-                        console.log(event);
-                      })
-                      .on("changed", (event) => {
-                        // Handle events that were removed from the blockchain
-                      })
-                      .on("error", (error) => {
-                        console.error("Error:", error);
-                      });
+                    .on("data", (event) => {
+                    if(event.code=="delegation alredy exists")
+                        alert("delegation alredy exists");
+                    console.log(event);
+                    })
                     contract.methods.delegate(address,institutionAddress,encodedservice).send({ from: accounts[0] })
-                    .on("receipt", (receipt) => {
-                        // Transaction successful, now read the return value from events
-                        const returnValue = receipt.events.DelegateReturnValue.returnValues.returnValue;
-                        console.log("returnvalue: "+returnValue);
-                    });
+                    .then(()=>{
+                        alert("delegation approved");
+                    })
                 }
                 else
                     alert("wrong account on metamask");
@@ -164,7 +158,7 @@ function Userpage({authenticated,user}){
             contract.methods.checkDelegationUser(address,institutionAddress,encodedservice).call({ from: accounts[0] })
             .then((res)=>{
                 if(res)
-                    alert("Delegation permitted: "+res);
+                    alert("Delegation permitted");
                 else
                     alert("Delegation not permitted");
             })
@@ -226,6 +220,70 @@ function Userpage({authenticated,user}){
         })
     }
 
+    function handleFormViewDelegations(e){
+        e.preventDefault(); 
+        
+        
+        let addressInst=JSON.parse(e.target.institutionView.value).address;
+        let vat=JSON.parse(e.target.institutionView.value).vat;
+
+        
+        
+        if(accounts[0]==user.address){
+            contract.events.debug(options, (error, event) => {
+                if (error) {
+                  console.error("Error:", error);
+                  return;
+                }
+              
+                // Handle the event data
+            console.log("Event received:", event.returnValues);
+            })
+            .on("data", (event) => {         
+            console.log(event.code);
+            });
+
+           
+            contract.methods.userDelegations(addressInst).call({ from: accounts[0] })
+            .then(async(res)=>{
+                const delegations = res.map((delegation) => ({
+                    delegated: delegation.delegated,
+                    institution: delegation.institution,
+                    services: delegation.services,
+                }));
+                let ser=[];
+                for(let i=0;i<delegations.length;i++){
+                    for(let j=0;j<delegations[i].services.length;j++){
+                        console.log("service encoded= "+delegations[i].services[j]);
+                        
+                        let toBeSent={
+                            vat:vat,
+                            encoded:delegations[i].services[j]
+                        }
+
+                        let service= await fetch("http://localhost:3000/decode",{
+                            method:'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body:JSON.stringify(toBeSent)
+                        }) 
+                        .then(response => {
+                            return response.json();
+                        })
+                        ser.push(<p>delegated:{delegations[i].delegated}, service: {service.decoded}</p>);
+                        
+                    }
+                }
+                setDelegations(ser);
+
+
+            })
+
+        }else{
+            alert("check metamask account: user and account not match!");
+        }
+
+    }
+
     return (
         <div className="user-wrapper">
             <form onSubmit={handleSubmit1}>
@@ -274,6 +332,21 @@ function Userpage({authenticated,user}){
                 <br />
                 <button type="submit">check delegation</button>
             </form>
+            <br />
+            <form onSubmit={handleFormViewDelegations}>
+                <h1>View delegations</h1>
+                <br></br>
+                <label>select institution:</label>
+                <br></br>
+                <select name="institutionView">
+                    {options}
+                </select>
+                <br></br>
+                <button type="submit">view</button>
+            </form>
+            <br />
+            <br />
+            {delegations}
         </div>
     );
 }

@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Institution = require('./models/Institution');
 const cors = require('cors');
-const CryptoJS=require('crypto-js');
+
+const crypto=require('crypto');
 //TODO delete: comment to try push with ssh
 require('dotenv').config();
 
@@ -84,7 +85,7 @@ app.post("/registerinstitution",async (req,res)=>{
     });
     return
   }
-
+  let iv = crypto.randomBytes(16).toString('hex');
   //if all the data are present, store the institution and create a random key
 
   let institution=new Institution({
@@ -92,9 +93,12 @@ app.post("/registerinstitution",async (req,res)=>{
     email:email,
     vat:vat,
     password:password,
-    privatekey: generateKey(15),
-    address:address
+    simmetrickey: generateKey(32),
+    address:address,
+    iv:iv
   });
+
+  console.log(institution);
 
 
   institution.save(); 
@@ -269,17 +273,16 @@ app.post("/encode",async (req,res)=>{
   let institution=await Institution.findOne({vat:vat}).exec();
 
   if (institution){
-    let plaintext=institution.vat+taxcode+service;
+    let plaintext=institution.vat+"|"+taxcode+"|"+service;
+    console.log(institution);
+    console.log("key= "+institution.simmetrickey)
+    
 
-    let key= CryptoJS.enc.Utf8.parse(institution.privatekey);
-    var iv = CryptoJS.enc.Utf8.parse("iv");
+    let cipher = crypto.createCipheriv('aes-256-cbc', institution.simmetrickey, Buffer.from(institution.iv, 'hex')); //create chiper
+    let encoded = cipher.update(plaintext, 'utf-8', 'hex');   //cipher
+    encoded += cipher.final('hex');
 
-    let encoded= CryptoJS.AES.encrypt(plaintext,key , {
-      keySize: 16,
-      iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7
-    }).toString(); //encrypt
+
     
     res.status(200).send({ error:false, encoded: encoded});
 
@@ -288,9 +291,39 @@ app.post("/encode",async (req,res)=>{
   res.status(200).send({ error:true});
 });
 
+
+app.post("/decode",async (req,res)=>{
+
+  let vat=req.body.vat;
+  let encoded= req.body.encoded;
+
+  if(!vat || !encoded){
+    res.status(200).send({ error: "missing parameters"});
+    return;
+  }
+
+  let institution=await Institution.findOne({vat:vat}).exec();
+
+  if (institution){
+
+    let decipher = crypto.createDecipheriv('aes-256-cbc', institution.simmetrickey, Buffer.from(institution.iv, 'hex'));
+    let decoded = decipher.update(encoded, 'hex', 'utf-8');
+    decoded += decipher.final('utf-8');
+  
+    res.status(200).send({ error:false, decoded: decoded.split("|")[2]});
+
+    return;
+  }
+  res.status(200).send({ error:true});
+});
+
+
+
+
+
 function generateKey(length) {
   let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters = 'abcdefghijklmonpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const charactersLength = characters.length;
   let counter = 0;
   while (counter < length) {
