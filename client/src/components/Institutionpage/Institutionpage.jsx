@@ -85,7 +85,7 @@ function Institutionpage({authenticated,institution}){
             });
 
            
-            contract.methods.userDelegationsFromInstitution(userAddress).call({ from: accounts[0] })
+            contract.methods.institutionDelegations(userAddress).call({ from: accounts[0] })
             .then(async (res)=>{
                 const delegations = res.map((delegation) => ({
                     delegated: delegation.delegated,
@@ -135,16 +135,6 @@ function Institutionpage({authenticated,institution}){
                 <h1>Add a service</h1>
                 <br />
                 <label>service name:</label>
-                <br />
-                <input type="text" name="service" />
-                <br />
-                <button type="submit">store</button>
-            </form>
-
-            <form >
-                <h1>Check delegation</h1>
-                <br />
-                <label>adddress:</label>
                 <br />
                 <input type="text" name="service" />
                 <br />

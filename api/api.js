@@ -98,7 +98,6 @@ app.post("/registerinstitution",async (req,res)=>{
     iv:iv
   });
 
-  console.log(institution);
 
 
   institution.save(); 
@@ -220,7 +219,6 @@ app.post("/addservice",async (req,res)=>{
 
   const institution = await Institution.findOne({ vat: vat });
 
-  console
 
   if (institution) {
     institution.services.push(service);
@@ -274,8 +272,7 @@ app.post("/encode",async (req,res)=>{
 
   if (institution){
     let plaintext=institution.vat+"|"+taxcode+"|"+service;
-    console.log(institution);
-    console.log("key= "+institution.simmetrickey)
+
     
 
     let cipher = crypto.createCipheriv('aes-256-cbc', institution.simmetrickey, Buffer.from(institution.iv, 'hex')); //create chiper

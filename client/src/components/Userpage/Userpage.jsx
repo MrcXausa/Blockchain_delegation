@@ -284,6 +284,62 @@ function Userpage({authenticated,user}){
 
     }
 
+
+
+    async function handleDeleteDelegation(e){
+        e.preventDefault();
+        let address =e.target.delegated_address.value;
+        let service=e.target.service.value;
+        let institutionAddress=JSON.parse(e.target.vat.value).address;
+        let vat=JSON.parse(e.target.vat.value).vat;
+
+        let toBeSent={
+            vat:vat,
+            taxcode:user.taxcode,
+            service:service
+        }
+
+        let res= await fetch("http://localhost:3000/encode",{
+            method:'POST',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(toBeSent)
+        }) .then(response => {
+            return response.json();
+        })
+        let encodedService=res.encoded;
+
+
+        if(accounts[0]==user.address){
+            contract.events.debug(options, (error, event) => {
+                if (error) {
+                  console.error("Error:", error);
+                  return;
+                }
+              
+                // Handle the event data
+                console.log("Event received:", event.returnValues);
+              })
+            .on("data", (event) => {
+            if(event.code=="delegation alredy exists")
+                alert("delegation alredy exists");
+            console.log(event);
+            })
+            contract.methods.deleteDelegation(address,institutionAddress,encodedService).send({from: accounts[0]})
+            .then((res)=>{
+                if(!res){
+                    alert("Could not delete delegation");
+                }else{
+                    alert("Delegation deleted!");
+                }
+                    
+            })
+            .catch((err)=>{console.log("error in delete delegation"); console.log(err)});
+
+        
+        }
+       
+    }
+
     return (
         <div className="user-wrapper">
             <form onSubmit={handleSubmit1}>
@@ -347,6 +403,28 @@ function Userpage({authenticated,user}){
             <br />
             <br />
             {delegations}
+            <form onSubmit={handleDeleteDelegation}>
+                <h1>Delete Delegation</h1>
+                <br />
+                <label>delegated address:</label>
+                <br />
+                <input type="text" name="delegated_address" />
+                <br />
+                <label>vat of company:</label>
+                <br />
+                <select name="vat" onChange={handleChange}>
+                    {options}
+                </select>
+                <br />
+                <label>service delegated:</label>
+                <br />
+                <select name="service">
+                    {services}
+                </select>
+                <br />
+                <br />
+                <button type="submit">delete</button>
+            </form>
         </div>
     );
 }

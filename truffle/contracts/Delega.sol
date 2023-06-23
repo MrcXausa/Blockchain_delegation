@@ -35,7 +35,7 @@
         function delegate(address delegated, address institution,  string memory service) public {
             require(users[msg.sender]); //check if the user already exist
             require(institutions[institution]); //check if the institution addres was added
-            //require(users[delegated]);
+            require(users[delegated]);
 
             bool found=false;
             uint index=0;
@@ -156,7 +156,7 @@
             return viewDels;
         }
 
-        function userDelegationsFromInstitution(address user) public view returns (Delegation[] memory){
+        function institutionDelegations(address user) public view returns (Delegation[] memory){
             require(users[user]);
             require(institutions[msg.sender]);
 
@@ -183,6 +183,58 @@
             }
 
             return viewDels;
+        }
+
+        function deleteDelegation(address delegated, address institution, string memory service) public {
+            require(users[msg.sender]);
+            require(users[delegated]);
+            require(institutions[institution]);
+            require(checkDelegationUser(delegated, institution, service));
+
+            uint indexService;
+            uint indexDelegation;
+            uint i = 0;
+            bool found = false;
+
+            while(!found && i<delegations[msg.sender].length){
+                if(delegations[msg.sender][i].delegated == delegated && delegations[msg.sender][i].institution == institution){
+                    
+                    indexDelegation = i;
+                    uint j = 0;
+                    bool foundString=false;
+                    
+                    while(!foundString && j<delegations[msg.sender][i].services.length){
+                        if(compareStrings(delegations[msg.sender][i].services[j], service)){
+                            indexService = j;
+                            foundString=true;
+                            
+                        }
+                        j++;
+                        emit debug("j++");
+                    }            
+                    found = true;
+                }
+                i++;
+                emit debug("i++");
+            }
+            
+            
+            if(delegations[msg.sender][indexDelegation].services.length==1){ //remove the hole delegation
+                if(delegations[msg.sender].length-1==indexDelegation){ //if it is the last element of the array
+                    delegations[msg.sender].pop();
+                    emit debug("removed entire delegation last");
+                }
+                else{
+                    removeDelegationComplete(msg.sender, indexDelegation);
+                    emit debug("removed entire delegation not last");
+                }
+            }
+            else{
+                removeDelegationService(msg.sender, indexDelegation, indexService);
+                emit debug("removed a service");
+            }
+            
+            
         }
 
 
@@ -266,7 +318,21 @@
             return ret;
         }
 
-    }
+        function removeDelegationComplete(address user,uint index) private {
+            Delegation memory sup=copyMemoryDelegation(delegations[user][delegations[user].length-1]);
+            delegations[user][index] = sup;
+            delete delegations[user][delegations[user].length-1];
+            //delegations[user].pop();
+        }
+
+        function removeDelegationService(address user,uint indexDelegation,uint indexService) private{
+            string memory sup=delegations[user][indexDelegation].services[delegations[user][indexDelegation].services.length-1];
+            delegations[user][indexDelegation].services[indexService]=sup;
+            delegations[user][indexDelegation].services.pop();
+        }
+}
+
+    
 
 
 
