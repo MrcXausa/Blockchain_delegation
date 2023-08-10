@@ -255,8 +255,7 @@
 
         function addService(string memory service) public{
             require(institutions[msg.sender]);
-            require(!checkService(msg.sender,service));//service is not already present
-
+            require(!checkService(msg.sender,service));                 //service is not already present
             institutionServices[msg.sender].push(service);
         }
 
@@ -275,12 +274,6 @@
 
             return found;
         }
-
-
-        //missing possibility to remove delegation
-
-
-
 
 
         //view and pure methods used as utilities

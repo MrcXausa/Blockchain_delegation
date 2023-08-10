@@ -82,7 +82,7 @@ function Institutionpage({authenticated,institution}){
             })
             .on("data", (event) => {         
             console.log(event.code);
-            });
+            }); 
 
            
             contract.methods.institutionDelegations(userAddress).call({ from: accounts[0] })

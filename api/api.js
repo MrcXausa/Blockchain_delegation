@@ -112,7 +112,7 @@ app.post("/rollbackuser",async (req,res)=>{
 
   let taxcode= req.body.taxcode;
 
-  if( !taxcode ){ //if some data are not present abort
+  if( !taxcode ){ 
     res.status(200).send({
       error:"missing parameters"
     });
@@ -120,7 +120,7 @@ app.post("/rollbackuser",async (req,res)=>{
   }
 
 
-  if(await User.deleteOne({taxcode:taxcode})){  //remove the user
+  if(await User.deleteOne({taxcode:taxcode})){  
     res.status(200).send({rollebacked:true});
     console.log("user rollebacked");
     return
