@@ -13,6 +13,7 @@ function Registeruser({setDisplay}){
         let email =e.target.email.value;
         let taxcode =e.target.taxcode.value;
         let password =e.target.password.value;
+        console.log("accounts= "+accounts);
         console.log(accounts[0])
 
         var toBeSent={
@@ -34,7 +35,7 @@ function Registeruser({setDisplay}){
         })
         .then(async (response) => {
             console.log(response);
-            if(response.stored==false)
+            if(response.stored===false)
                 alert("User has not been created. Error:"+response.error);
             else{
                 await contract.methods.addUser(accounts[0]).send({ from: accounts[0] /*process.env.REACT_APP_CONTRACT_OWNER_ADDRESS*/ })
@@ -87,13 +88,14 @@ function Registeruser({setDisplay}){
             <input type="password" name="password"  />
             <br />
             <br />
-            <button onClick={handleClick}>back</button>
+            <button type="submit">register</button>
             <br />
             <br />
             <u><b><label>Pay attention to the account selected on metamask,<br /> it will be bounded to the user</label></b></u>
             <br />
             <br />
-            <button type="submit">register</button>
+            <button onClick={handleClick}>back</button>
+            
         </form>
         </>
     );

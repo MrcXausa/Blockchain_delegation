@@ -32,7 +32,7 @@ function RegisterInstitution({setDisplay}){
             return response.json();
         })
         .then(async (response) => {
-            if(response.stored==false)
+            if(response.stored===false)
                 alert("Institution has not been created. Error:"+response.error);
             else{
                 await contract.methods.addInstitution(accounts[0]).send({ from: accounts[0]  })
@@ -79,13 +79,15 @@ function RegisterInstitution({setDisplay}){
             <input type="password" name="password"  />
             <br />
             <br />
-            <button onClick={handleClick}>back</button>
+            <button type="submit">register</button>
+            
             <br />
             <br />
             <u><b><label>Pay attention to the account selected on metamask,<br /> it will be bounded to the institution</label></b></u>
             <br />
             <br />
-            <button type="submit">register</button>
+            <button onClick={handleClick}>back</button>
+            
         </form>
         </>
     );

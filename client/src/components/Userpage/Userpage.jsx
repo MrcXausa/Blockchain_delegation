@@ -2,6 +2,7 @@ import { useEth } from "../../contexts/EthContext";
 import { useNavigate } from "react-router-dom";
 import './Userpage.css'
 import { useEffect, useState } from "react";
+import web3 from "web3";
 
 function Userpage({authenticated,user}){
 
@@ -93,7 +94,7 @@ function Userpage({authenticated,user}){
             if(isValid){
                 let encodedservice=res.encoded;
                 console.log("encodedservice check delegation: "+encodedservice);
-                if(accounts[0]==user.address){
+                if(accounts[0]===user.address){
                     contract.events.debug(options, (error, event) => {
                         if (error) {
                           console.error("Error:", error);
@@ -104,7 +105,7 @@ function Userpage({authenticated,user}){
                         console.log("Event received:", event.returnValues);
                       })
                     .on("data", (event) => {
-                    if(event.code=="delegation alredy exists")
+                    if(event.code==="delegation alredy exists")
                         alert("delegation alredy exists");
                     console.log(event);
                     })
@@ -229,7 +230,7 @@ function Userpage({authenticated,user}){
 
         
         
-        if(accounts[0]==user.address){
+        if(accounts[0]===user.address){
             contract.events.debug(options, (error, event) => {
                 if (error) {
                   console.error("Error:", error);
@@ -248,8 +249,7 @@ function Userpage({authenticated,user}){
             .then(async(res)=>{
                 const delegations = res.map((delegation) => ({
                     delegated: delegation.delegated,
-                    institution: delegation.institution,
-                    services: delegation.services,
+                    services: delegation.services
                 }));
                 let ser=[];
                 for(let i=0;i<delegations.length;i++){
@@ -309,7 +309,7 @@ function Userpage({authenticated,user}){
         let encodedService=res.encoded;
 
 
-        if(accounts[0]==user.address){
+        if(accounts[0]===user.address){
             contract.events.debug(options, (error, event) => {
                 if (error) {
                   console.error("Error:", error);
@@ -320,7 +320,7 @@ function Userpage({authenticated,user}){
                 console.log("Event received:", event.returnValues);
               })
             .on("data", (event) => {
-            if(event.code=="delegation alredy exists")
+            if(event.code==="delegation alredy exists")
                 alert("delegation alredy exists");
             console.log(event);
             })

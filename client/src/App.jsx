@@ -1,7 +1,6 @@
 import { EthProvider } from "./contexts/EthContext";
 import { BrowserRouter, Route, Routes, Navigate  } from 'react-router-dom';
 import { useState } from "react";
-import { useEffect } from "react";
 import Userpage from "./components/Userpage/Userpage.jsx"
 import Institutionpage from "./components/Institutionpage/Institutionpage.jsx";
 import Dashboard from "./components/Dashboard/Dashboard";

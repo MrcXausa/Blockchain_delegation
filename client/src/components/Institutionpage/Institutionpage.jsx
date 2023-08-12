@@ -39,7 +39,7 @@ function Institutionpage({authenticated,institution}){
             console.log(response);
             if(response.stored){
                 
-                if(accounts[0]==institution.address){
+                if(accounts[0]===institution.address){
                     await contract.methods.addService(service).send({ from: accounts[0]  })
                     .then(()=>alert("service added"))
                     .catch((err)=>{
@@ -70,7 +70,7 @@ function Institutionpage({authenticated,institution}){
         
         
         
-        if(accounts[0]==institution.address){
+        if(accounts[0]===institution.address){
             contract.events.debug({}, (error, event) => {
                 if (error) {
                   console.error("Error:", error);
