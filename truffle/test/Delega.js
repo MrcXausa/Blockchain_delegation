@@ -1,4 +1,4 @@
-const Delega = artifacts.require("Delega"); 
+const Delega = artifacts.require("Delega"); // Make sure this matches your contract's artifact name
 
 contract("Delega", (accounts) => {
   let delegaInstance;
