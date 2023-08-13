@@ -28,14 +28,14 @@ contract("Delega", (accounts) => {
     await delegaInstance.addInstitution(accounts[2]);
 
     await delegaInstance.delegate(accounts[3], accounts[2], service);
-  //
-    //const isDelegationPresent = await delegaInstance.checkDelegationUser.call(accounts[3], accounts[2], service);
-    //assert.isTrue(isDelegationPresent, "Delegation should be present");
-  //
-    //const userDelegations = await delegaInstance.userDelegations.call(accounts[2], { from: accounts[1] });
-    //assert.equal(userDelegations.length, 1, "User should have one delegation");
-    //assert.equal(userDelegations[0].delegated, accounts[3], "Delegated address should match");
-    //assert.deepEqual(userDelegations[0].services, [service], "Delegated services should match");
+  
+    const isDelegationPresent = await delegaInstance.checkDelegationUser.call(accounts[3], accounts[2], service);
+    assert.isTrue(isDelegationPresent, "Delegation should be present");
+  
+    const userDelegations = await delegaInstance.userDelegations.call(accounts[2], { from: accounts[1] });
+    assert.equal(userDelegations.length, 1, "User should have one delegation");
+    assert.equal(userDelegations[0].delegated, accounts[3], "Delegated address should match");
+    assert.deepEqual(userDelegations[0].services, [service], "Delegated services should match");
   });
   
   
