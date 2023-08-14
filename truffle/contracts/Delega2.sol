@@ -40,7 +40,7 @@ contract Delega2 {
 
 
     //services offered by each institution
-    mapping(address=> string[]) institutionServices;
+    mapping(bytes23=> bool) institutionServices;
 
 
     //struct for returning data to frontend
@@ -134,15 +134,12 @@ contract Delega2 {
         require(authorizedInstitutions[institution]);
         require(checkDelegationUser(delegated, institution, service));
 
-
         bytes32 hashedService=hash(service);       
 
         //if the delegated service is the last for that institution
         if (users[msg.sender].institutions[institution].delegateds[delegated].services.length == 1) {
-
             // Remove the entire delegation
             deleteEntireDelegation(institution, delegated,hashedService);
-
         } else {
             // Remove the specified service
             uint indexService = users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[hashedService];
@@ -164,31 +161,18 @@ contract Delega2 {
 
     }
 
+
     function addService(string memory service) public{
         require(authorizedInstitutions[msg.sender]);
         require(!checkService(msg.sender,service));                 //service is not already present
-        institutionServices[msg.sender].push(service);
+        institutionServices[hash(service)]=true;
     }
+
 
     function checkService(address institution, string memory service) public view returns (bool){
         require(authorizedInstitutions[institution]);
-
-        bool found=false;
-
-        uint i=0;
-        while(!found && i<institutionServices[institution].length){
-            if(compareStrings(institutionServices[institution][i],service)){
-                found=true;
-            }
-            i++;
-        }
-
-        return found;
+        return institutionServices[hash(service)];
     }
-
-
-
-
 
 
     function hash(string memory a) private pure returns(bytes32) {
@@ -212,7 +196,9 @@ contract Delega2 {
         delete users[msg.sender].institutions[institution].delegateds[delegated];
         delete users[msg.sender].institutions[institution].delegatedAddresses[indexToRemove];
 
-        bool delegatedAddressesIsEmpty=true;
+        bool delegatedAddressesIsEmpty=true
+
+        //controllare se può essere ottimizzato
 
         for (uint256 index = 0; index < users[msg.sender].institutions[institution].delegatedAddresses.length; index++) {
             if(users[msg.sender].institutions[institution].delegatedAddresses[index]!=address(0)){
@@ -241,7 +227,4 @@ contract Delega2 {
         delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[service];
         delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIsPresent[service];
     }
-
-    
-
 }
