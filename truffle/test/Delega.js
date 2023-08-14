@@ -12,8 +12,8 @@ contract("Delega2", (accounts) => {
     await delegaInstance.addUser(accounts[1]);
     await delegaInstance.addInstitution(accounts[2]);
   
-    const isUserAuthorized = await delegaInstance.authorizedUsers(accounts[1]);
-    const isInstitutionAuthorized = await delegaInstance.authorizedInstitutions(accounts[2]);
+    const isUserAuthorized = await delegaInstance.isAuthorizedUser(accounts[1]);
+    const isInstitutionAuthorized = await delegaInstance.isAuthorizedInstitution(accounts[2]);
     
     assert.isTrue(isUserAuthorized, "User should be authorized");
     assert.isTrue(isInstitutionAuthorized, "Institution should be authorized");
