@@ -38,8 +38,8 @@ contract Delega2 {
 
 
     //all the allowed users and institutions
-    mapping(address => bool) public authorizedUsers; //added the "public" statement, check if it's a problem
-    mapping(address => bool) public authorizedInstitutions;
+    mapping(address => bool) authorizedUsers;
+    mapping(address => bool) authorizedInstitutions;
 
     //services offered by each institution
     mapping(address=>string[]) institutionServices;
@@ -189,10 +189,6 @@ contract Delega2 {
     }
 
 
-
-
-
-
     function hash(string memory a) private pure returns(bytes32) {
         return keccak256(abi.encodePacked((a)));
     }
@@ -244,6 +240,13 @@ contract Delega2 {
         delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIsPresent[service];
     }
 
-    
+    //add access control to these functions
+    function isAuthorizedUser(address user) public view returns (bool) {
+    return authorizedUsers[user];
+    }
+
+    function isAuthorizedInstitution(address institution) public view returns (bool) {
+        return authorizedInstitutions[institution];
+    }
 
 }
