@@ -10,7 +10,6 @@ contract Delega2 {
     event LogUserAuthorized(address user);
     event LogDelegation(address delegated, address institution, string service);
 
-
     //only account allowed to add users
     address owner;
 
@@ -37,12 +36,13 @@ contract Delega2 {
     mapping(address=>Delegations)  users;
 
 
-    //all the allowed users and institutions
-    mapping(address => bool) authorizedUsers;
-    mapping(address => bool) authorizedInstitutions;
+    //all the allowed users and institutions 
+    mapping(address=>bool)  authorizedUsers;
+    mapping(address=>bool)  authorizedInstitutions;
+
 
     //services offered by each institution
-    mapping(address=>string[]) institutionServices;
+    mapping(address=>mapping(bytes32=> bool)) institutionServices;
 
 
     //struct for returning data to frontend
@@ -136,15 +136,12 @@ contract Delega2 {
         require(authorizedInstitutions[institution]);
         require(checkDelegationUser(delegated, institution, service));
 
-
         bytes32 hashedService=hash(service);       
 
         //if the delegated service is the last for that institution
         if (users[msg.sender].institutions[institution].delegateds[delegated].services.length == 1) {
-
             // Remove the entire delegation
             deleteEntireDelegation(institution, delegated,hashedService);
-
         } else {
             // Remove the specified service
             uint indexService = users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[hashedService];
@@ -166,26 +163,17 @@ contract Delega2 {
 
     }
 
+
     function addService(string memory service) public{
         require(authorizedInstitutions[msg.sender]);
         require(!checkService(msg.sender,service));                 //service is not already present
-        institutionServices[msg.sender].push(service);
+        institutionServices[msg.sender][hash(service)]=true;
     }
+
 
     function checkService(address institution, string memory service) public view returns (bool){
         require(authorizedInstitutions[institution]);
-
-        bool found=false;
-
-        uint i=0;
-        while(!found && i<institutionServices[institution].length){
-            if(compareStrings(institutionServices[institution][i],service)){
-                found=true;
-            }
-            i++;
-        }
-
-        return found;
+        return institutionServices[msg.sender][hash(service)];
     }
 
 
@@ -211,6 +199,8 @@ contract Delega2 {
         delete users[msg.sender].institutions[institution].delegatedAddresses[indexToRemove];
 
         bool delegatedAddressesIsEmpty=true;
+
+        //controllare se può essere ottimizzato
 
         for (uint256 index = 0; index < users[msg.sender].institutions[institution].delegatedAddresses.length; index++) {
             if(users[msg.sender].institutions[institution].delegatedAddresses[index]!=address(0)){
@@ -242,10 +232,12 @@ contract Delega2 {
 
     //add access control to these functions
     function isAuthorizedUser(address user) public view returns (bool) {
-    return authorizedUsers[user];
+        require(authorizedUsers[msg.sender]);
+        return authorizedUsers[user];
     }
 
     function isAuthorizedInstitution(address institution) public view returns (bool) {
+        require(authorizedInstitutions[msg.sender]);
         return authorizedInstitutions[institution];
     }
 
