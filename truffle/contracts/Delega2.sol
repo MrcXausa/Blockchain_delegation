@@ -40,7 +40,7 @@ contract Delega2 {
 
 
     //services offered by each institution
-    mapping(bytes23=> bool) institutionServices;
+    mapping(address=>mapping(bytes32=> bool)) institutionServices;
 
 
     //struct for returning data to frontend
@@ -165,13 +165,13 @@ contract Delega2 {
     function addService(string memory service) public{
         require(authorizedInstitutions[msg.sender]);
         require(!checkService(msg.sender,service));                 //service is not already present
-        institutionServices[hash(service)]=true;
+        institutionServices[msg.sender][hash(service)]=true;
     }
 
 
     function checkService(address institution, string memory service) public view returns (bool){
         require(authorizedInstitutions[institution]);
-        return institutionServices[hash(service)];
+        return institutionServices[msg.sender][hash(service)];
     }
 
 
@@ -196,7 +196,7 @@ contract Delega2 {
         delete users[msg.sender].institutions[institution].delegateds[delegated];
         delete users[msg.sender].institutions[institution].delegatedAddresses[indexToRemove];
 
-        bool delegatedAddressesIsEmpty=true
+        bool delegatedAddressesIsEmpty=true;
 
         //controllare se può essere ottimizzato
 
