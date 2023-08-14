@@ -84,6 +84,21 @@ contract("Delega2", (accounts) => {
     assert.deepEqual(institutionDelegations[0].services, [service], "Delegated services should match");
   });
 
+  it("should delete a delegation", async () => {
+    const service = "Service 1";
+    
+    // Check if the delegation is present before deletion
+    let isDelegationPresent = await delegaInstance.checkDelegationUser.call(accounts[3], accounts[2], service, {from: accounts[1]});
+    assert.isTrue(isDelegationPresent, "Delegation should be present");
+  
+    // Delete the delegation
+    await delegaInstance.deleteDelegation(accounts[3], accounts[2], service, {from: accounts[1]});
+  
+    // Check if the delegation is still present after deletion
+    isDelegationPresent = await delegaInstance.checkDelegationUser.call(accounts[3], accounts[2], service, {from: accounts[1]});
+    assert.isFalse(isDelegationPresent, "Delegation should be deleted");
+  });
+  
     // Add more test cases as needed
 
 });
