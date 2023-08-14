@@ -8,17 +8,13 @@ contract Delega2 {
     //event for debugging
     event debug(string code);
 
-
-
     //only account allowed to add users
     address owner;
 
-
-   
     struct Services{        //represent the services delegated to every single delegated
         string[] services;                          //encrypted string
         mapping(bytes32=>bool) serviceIsPresent;    //hash of the encrypted string
-        mapping(string=>uint) serviceIndex;         //mapping to get immediately the services indexes
+        mapping(bytes32=>uint) serviceIndex;         //mapping to get immediately the services indexes
         address delegated;                          //address of the delegated
     }
 
@@ -26,7 +22,7 @@ contract Delega2 {
         mapping(address => Services) delegateds;    //all the delegateds of an institution for a user
         mapping(address=>bool) addressIsPresent;    //hash of the encrypted string
         mapping(address=>uint) delegatedIndex;      //mapping to get immediately the addresses indexes
-        address[] delegatedAddresses;               //
+        address[] delegatedAddresses;               //all the addresses a user dalegated for at leas one service
     }
 
     struct Delegations{
@@ -57,7 +53,6 @@ contract Delega2 {
         owner = msg.sender; //the owner of the contract is the address that deploys it 
     }
 
-
     
     function delegate(address delegated, address institution,  string memory service) public {
         require(authorizedUsers[msg.sender],"unauthorized user");               //check if the user already exist
@@ -72,7 +67,7 @@ contract Delega2 {
         users[msg.sender].institutions[institution].delegateds[delegated].services.push(service);
         users[msg.sender].institutions[institution].delegateds[delegated].serviceIsPresent[hash(service)]=true;
         uint lengthServices=users[msg.sender].institutions[institution].delegateds[delegated].services.length;
-        users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[service]=lengthServices-1;
+        users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[hash(service)]=lengthServices-1;
 
         if(!users[msg.sender].institutions[institution].addressIsPresent[delegated]){   //if the delegated address is not already present, add it
             users[msg.sender].institutions[institution].addressIsPresent[delegated]=true;
@@ -131,10 +126,29 @@ contract Delega2 {
         }
 
         return ret;
-    
     }
-    
 
+    function deleteDelegation(address delegated, address institution, string memory service) public {
+        require(authorizedUsers[msg.sender]);
+        require(authorizedUsers[delegated]);
+        require(authorizedInstitutions[institution]);
+        require(checkDelegationUser(delegated, institution, service));
+
+
+        bytes32 hashedService=hash(service);       
+
+        //if the delegated service is the last for that institution
+        if (users[msg.sender].institutions[institution].delegateds[delegated].services.length == 1) {
+
+            // Remove the entire delegation
+            deleteEntireDelegation(institution, delegated,hashedService);
+
+        } else {
+            // Remove the specified service
+            uint indexService = users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[hashedService];
+            deleteSpecifiedService(institution, delegated, hashedService,indexService);
+        }
+    }
 
     function addUser(address user) public {
         //require (msg.sender==owner);
@@ -173,7 +187,9 @@ contract Delega2 {
     }
 
 
-    //Utility pure methods
+
+
+
 
     function hash(string memory a) private pure returns(bytes32) {
         return keccak256(abi.encodePacked((a)));
@@ -182,5 +198,50 @@ contract Delega2 {
     function compareStrings(string memory a, string memory b) private pure returns (bool) {
         return (hash(a) == hash(b));
     }
+
+    function deleteEntireDelegation(address institution, address delegated, bytes32 service) private {
+        
+        delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIsPresent[service];
+        delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[service];
+
+        
+        uint indexToRemove= users[msg.sender].institutions[institution].delegatedIndex[delegated];
+
+        delete users[msg.sender].institutions[institution].addressIsPresent[delegated];
+        delete users[msg.sender].institutions[institution].delegatedIndex[delegated];
+        delete users[msg.sender].institutions[institution].delegateds[delegated];
+        delete users[msg.sender].institutions[institution].delegatedAddresses[indexToRemove];
+
+        bool delegatedAddressesIsEmpty=true;
+
+        for (uint256 index = 0; index < users[msg.sender].institutions[institution].delegatedAddresses.length; index++) {
+            if(users[msg.sender].institutions[institution].delegatedAddresses[index]!=address(0)){
+                delegatedAddressesIsEmpty=false;
+            }
+        }
+
+        if(delegatedAddressesIsEmpty){
+            delete users[msg.sender].institutions[institution];
+        }
+
+    }
+
+    function deleteSpecifiedService(address institution, address delegated, bytes32 service, uint indexService) private{
+        uint lastIndex = users[msg.sender].institutions[institution].delegateds[delegated].services.length - 1;
+
+        string memory lastService=users[msg.sender].institutions[institution].delegateds[delegated].services[lastIndex];
+
+        if (indexService != lastIndex) {
+            // Swap the last service with the one to be removed
+            users[msg.sender].institutions[institution].delegateds[delegated].services[indexService] = lastService;
+            users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[hash(lastService)] = indexService;
+        }
+
+        users[msg.sender].institutions[institution].delegateds[delegated].services.pop();
+        delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIndex[service];
+        delete users[msg.sender].institutions[institution].delegateds[delegated].serviceIsPresent[service];
+    }
+
+    
 
 }
