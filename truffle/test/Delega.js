@@ -1,6 +1,6 @@
-const Delega = artifacts.require("Delega"); // Make sure this matches your contract's artifact name
+const Delega = artifacts.require("Delega2"); // Make sure this matches your contract's artifact name
 
-contract("Delega", (accounts) => {
+contract("Delega2", (accounts) => {
   let delegaInstance;
 
   before(async () => {
@@ -42,7 +42,7 @@ contract("Delega", (accounts) => {
   it("should add services to institutions", async () => {
     const service = "Service 2";
 
-    await delegaInstance.addService(service, { from: accounts[2] });
+    await delegaInstance.addService(service, {from: accounts[2]});
 
     const hasService = await delegaInstance.checkService.call(accounts[2], service);
     assert.isTrue(hasService, "Service should be added to the institution");
