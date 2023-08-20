@@ -1,4 +1,5 @@
 import { useEth } from "../../contexts/EthContext";
+import './Subscribe.css'
 require('dotenv').config();
 
 function Registeruser({setDisplay}){
@@ -65,7 +66,7 @@ function Registeruser({setDisplay}){
 
     return (
         <>
-        <form onSubmit={handleSubmit}>
+        <form className="user-institution-register-form" onSubmit={handleSubmit}>
             <h1>Insert your information</h1>
             <label >Name: </label>
             <input type="text" name="name"  />

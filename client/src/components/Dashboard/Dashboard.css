@@ -1,0 +1,31 @@
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+  }
+  
+  hr {
+    margin: 50px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+  }
+  
+  /* Add more styles for Login and Subscribe components */
+  
+  /* Login */
+  .login-form {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Subscribe */
+  .subscribe-form {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  

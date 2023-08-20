@@ -342,89 +342,96 @@ function Userpage({authenticated,user}){
 
     return (
         <div className="user-wrapper">
-            <form onSubmit={handleSubmit1}>
+            <section>
                 <h1>Delegate</h1>
+                <form onSubmit={handleSubmit1}>
+                    <br />
+                    <label>delegated address</label>
+                    <br />
+                    <input type="text" name="delegated_address" />
+                    <br />
+                    <label>vat of company to delegate</label>
+                    <br />
+                    <select name="vat" onChange={handleChange}>
+                        {options}
+                    </select>
+                    <br />
+                    <label>service to delegate</label>
+                    <br />
+                    <select name="service">
+                        {services}
+                    </select>
+                    <br />
+                    <br />
+                    <button type="submit">Delegate</button>
+                </form>
+            </section>
+            
+            <section>
+                <h1>Check Delegation</h1>
+                <form onSubmit={handleSubmit2}>
                 <br />
-                <label>delegated address:</label>
+                <label>delegated address</label>
                 <br />
                 <input type="text" name="delegated_address" />
                 <br />
-                <label>vat of company to delegate:</label>
-                <br />
-                <select name="vat" onChange={handleChange}>
-                    {options}
-                </select>
-                <br />
-                <label>service to delegate:</label>
-                <br />
-                <select name="service">
-                    {services}
-                </select>
-                <br />
-                <br />
-                <button type="submit">delegate</button>
-            </form>
-            <br />
-            <br />
-            <form onSubmit={handleSubmit2}>
-                <h1>Check delegation</h1>
-                <br />
-                <label>delegated address:</label>
-                <br />
-                <input type="text" name="delegated_address" />
-                <br />
-                <label>vat of company to delegate:</label>
+                <label>vat of company to delegate</label>
                 <br />
                 <select name="vat" onChange={handleChange1}>
                     {options}
                 </select>
                 <br />
-                <label>service:</label>
+                <label>service</label>
                 <br />
                 <select name="service">
                     {services1}
                 </select>
                 <br />
                 <br />
-                <button type="submit">check delegation</button>
+                <button type="submit">Check</button>
             </form>
-            <br />
-            <form onSubmit={handleFormViewDelegations}>
-                <h1>View delegations</h1>
+            </section>
+            
+            <section>
+                <h1>View Delegations</h1>
+                <form onSubmit={handleFormViewDelegations}>
                 <br></br>
-                <label>select institution:</label>
+                <label>select institution</label>
                 <br></br>
                 <select name="institutionView">
                     {options}
                 </select>
                 <br></br>
-                <button type="submit">view</button>
+                <button type="submit">View</button>
             </form>
-            <br />
-            <br />
+            </section>
+
             {delegations}
+            <section>
+            <h1>Delete Delegation</h1>
             <form onSubmit={handleDeleteDelegation}>
-                <h1>Delete Delegation</h1>
                 <br />
-                <label>delegated address:</label>
+                <label>delegated address</label>
                 <br />
                 <input type="text" name="delegated_address" />
                 <br />
-                <label>vat of company:</label>
+                <label>vat of company</label>
                 <br />
                 <select name="vat" onChange={handleChange}>
                     {options}
                 </select>
                 <br />
-                <label>service delegated:</label>
+                <label>service delegated</label>
                 <br />
                 <select name="service">
                     {services}
                 </select>
                 <br />
                 <br />
-                <button type="submit">delete</button>
+                <button type="submit">Delete</button>
             </form>
+            </section>
+
         </div>
     );
 }
