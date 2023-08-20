@@ -35,7 +35,7 @@ export default function Login({setUser,setInstitution,setLoginUser,setLoginInsti
     .then((res=>{
       console.log(res);
       if(res.authenticated){
-        if(res.account=="user"){
+        if(res.account==="user"){
           setLoginUser(true);
           setUser({
             name:res.data.name,
@@ -52,7 +52,7 @@ export default function Login({setUser,setInstitution,setLoginUser,setLoginInsti
           navigate("/user"); // Redirect to /user route
         }
           
-        if(res.account=="institution"){
+        if(res.account==="institution"){
           setLoginInstitution(true);
           setInstitution({
             name:res.data.name,

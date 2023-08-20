@@ -35,7 +35,7 @@ function Registeruser({setDisplay}){
         })
         .then(async (response) => {
             console.log(response);
-            if(response.stored==false)
+            if(response.stored===false)
                 alert("User has not been created. Error:"+response.error);
             else{
                 await contract.methods.addUser(accounts[0]).send({ from: accounts[0] /*process.env.REACT_APP_CONTRACT_OWNER_ADDRESS*/ })

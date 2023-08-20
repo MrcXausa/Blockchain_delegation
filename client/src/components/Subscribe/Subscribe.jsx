@@ -24,7 +24,7 @@ function Subscribe(){
     
     const choiceScreen=<>
         <form >
-            <h1>You're not registered? register now!</h1>
+            <h1>Not registered yet? Register now!</h1>
             <br />
             <br />
             <button onClick={handleClickUser} name="button" value="user">User</button>

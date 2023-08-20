@@ -32,7 +32,7 @@ function RegisterInstitution({setDisplay}){
             return response.json();
         })
         .then(async (response) => {
-            if(response.stored==false)
+            if(response.stored===false)
                 alert("Institution has not been created. Error:"+response.error);
             else{
                 await contract.methods.addInstitution(accounts[0]).send({ from: accounts[0]  })

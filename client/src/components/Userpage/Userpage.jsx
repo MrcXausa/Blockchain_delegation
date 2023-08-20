@@ -79,7 +79,7 @@ function Userpage({authenticated,user}){
             method:'POST',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(toBeSent)
-        }) .then(response => {
+        }).then(response => {
             return response.json();
             
         })
@@ -93,7 +93,7 @@ function Userpage({authenticated,user}){
             if(isValid){
                 let encodedservice=res.encoded;
                 console.log("encodedservice check delegation: "+encodedservice);
-                if(accounts[0]==user.address){
+                if(accounts[0]===user.address){
                     contract.events.debug(options, (error, event) => {
                         if (error) {
                           console.error("Error:", error);
@@ -104,7 +104,7 @@ function Userpage({authenticated,user}){
                         console.log("Event received:", event.returnValues);
                       })
                     .on("data", (event) => {
-                    if(event.code=="delegation alredy exists")
+                    if(event.code==="delegation alredy exists")
                         alert("delegation alredy exists");
                     console.log(event);
                     })
@@ -143,7 +143,7 @@ function Userpage({authenticated,user}){
             method:'POST',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(toBeSent)
-        }) .then(response => {
+        }).then(response => {
             return response.json();
             
         })
@@ -229,7 +229,7 @@ function Userpage({authenticated,user}){
 
         
         
-        if(accounts[0]==user.address){
+        if(accounts[0]===user.address){
             contract.events.debug(options, (error, event) => {
                 if (error) {
                   console.error("Error:", error);
@@ -299,17 +299,17 @@ function Userpage({authenticated,user}){
             service:service
         }
 
-        let res= await fetch("http://localhost:3000/encode",{
+        let res=await fetch("http://localhost:3000/encode",{
             method:'POST',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(toBeSent)
-        }) .then(response => {
+        }).then(response => {
             return response.json();
         })
         let encodedService=res.encoded;
 
 
-        if(accounts[0]==user.address){
+        if(accounts[0]===user.address){
             contract.events.debug(options, (error, event) => {
                 if (error) {
                   console.error("Error:", error);
@@ -320,7 +320,7 @@ function Userpage({authenticated,user}){
                 console.log("Event received:", event.returnValues);
               })
             .on("data", (event) => {
-            if(event.code=="delegation alredy exists")
+            if(event.code==="delegation alredy exists")
                 alert("delegation alredy exists");
             console.log(event);
             })
