@@ -3,7 +3,7 @@
     display: grid; /* Use CSS Grid for layout */
     grid-template-columns: 1fr 1fr; /* Two equal columns */
     gap: 20px; /* Gap between columns */
-    align-items: center;
+    align-items: flex-start;
     max-width: 600px; /* Adjust the maximum width as needed */
     margin: 0 auto;
     padding: 20px;
@@ -62,6 +62,7 @@
     border-radius: 50px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    bottom: 200px;
   }
   
   .user-wrapper button:hover {
