@@ -2,7 +2,7 @@ import { useEth } from "../../contexts/EthContext";
 require('dotenv').config();
 
 function Registeruser({setDisplay}){
-    const { state: { contract, accounts, owner } } = useEth();
+    const { state: { contract, accounts, web3 } } = useEth();
 
 
     async function handleSubmit(e){
@@ -38,25 +38,43 @@ function Registeruser({setDisplay}){
             if(response.stored===false)
                 alert("User has not been created. Error:"+response.error);
             else{
-                await contract.methods.addUser(accounts[0]).send({ from: accounts[0] /*process.env.REACT_APP_CONTRACT_OWNER_ADDRESS*/ })
-                .then(()=>alert("account created, login above"))
-                .catch((err)=>{
-                    alert("contract not signed");
+                const owner = web3.eth.accounts.privateKeyToAccount(process.env.REACT_APP_CONTRACT_OWNER_PRVATEKEY);
+
+                web3.eth.accounts.wallet.add(owner);
+
+                await contract.methods.addUser(accounts[0]).send({ 
+                    from: owner.address,
+                    gas: 100000
+                })     
+                .then(async ()=>{
+                    let authorized=await contract.methods.isAuthorizedUser(accounts[0]).call({ from: owner.address});
+                    console.log("Authorized user="+authorized);
+    
+                    if(authorized)
+                        alert("User created!");
+                    else{
+                        alert("problem with the creation of the User");
+                        fetch("http://localhost:3000/rollbackuser",{
+                            method:'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body:JSON.stringify({taxcode:taxcode})
+                        });
+                    }
+                }) 
+                .catch ((error) =>{
+                    alert('an error occurred');
+                    console.log('error: '+error);
                     fetch("http://localhost:3000/rollbackuser",{
                         method:'POST',
                         headers: { "Content-Type": "application/json" },
                         body:JSON.stringify({taxcode:taxcode})
                     });
                 });
+                
+               
+
             }
-        })
-
-       
-    
-        
-       
-
-       
+        })     
     }
 
     function handleClick(e){

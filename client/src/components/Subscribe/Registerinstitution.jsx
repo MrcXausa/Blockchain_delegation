@@ -3,7 +3,7 @@ require('dotenv').config();
 
 
 function RegisterInstitution({setDisplay}){
-    const { state: { contract, accounts } } = useEth();
+    const { state: { contract, accounts, web3 } } = useEth();
 
 
 
@@ -34,17 +34,40 @@ function RegisterInstitution({setDisplay}){
         .then(async (response) => {
             if(response.stored===false)
                 alert("Institution has not been created. Error:"+response.error);
-            else{
-                await contract.methods.addInstitution(accounts[0]).send({ from: accounts[0]  })
-                .then((res)=>{alert("account created, login above");console.log(res)})
-                .catch((err)=>{
-                    alert("contract not signed");
+            else{               
+                const owner = web3.eth.accounts.privateKeyToAccount(process.env.REACT_APP_CONTRACT_OWNER_PRVATEKEY);
+
+                web3.eth.accounts.wallet.add(owner);
+                
+                await contract.methods.addInstitution(accounts[0]).send({ 
+                    from: owner.address,
+                    gas: 100000
+                })
+                .then(async()=>{
+                    let authorized=await contract.methods.isAuthorizedInstitution(accounts[0]).call({ from: owner.address});
+                    console.log("Institution authorized="+authorized);
+                    if(authorized)
+                        alert("Institution created!");
+                    else{
+                        alert("problem with the creation of the institution");
+                        fetch("http://localhost:3000/rollbackinstitution",{
+                            method:'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body:JSON.stringify({vat:vat})
+                        });
+                    }
+                })
+                .catch ((error)=> {
+                    alert('an error occurred');
+                    console.log('error: '+error);
                     fetch("http://localhost:3000/rollbackinstitution",{
                         method:'POST',
                         headers: { "Content-Type": "application/json" },
                         body:JSON.stringify({vat:vat})
                     });
                 });
+
+                
             }
         })
 

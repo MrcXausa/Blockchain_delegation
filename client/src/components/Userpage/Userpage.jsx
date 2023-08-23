@@ -2,7 +2,6 @@ import { useEth } from "../../contexts/EthContext";
 import { useNavigate } from "react-router-dom";
 import './Userpage.css'
 import { useEffect, useState } from "react";
-import web3 from "web3";
 
 function Userpage({authenticated,user}){
 
