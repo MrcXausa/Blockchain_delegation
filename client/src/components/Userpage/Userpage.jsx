@@ -255,7 +255,7 @@ function Userpage({ authenticated, user }) {
                     let ser = [];
                     for (let i = 0; i < delegations.length; i++) {
                         for (let j = 0; j < delegations[i].services.length; j++) {
-                            console.log("service encoded= " + delegations[i].services[j]);
+                            console.log("service encoded = " + delegations[i].services[j]);
 
                             let toBeSent = {
                                 vat: vat,
@@ -270,7 +270,7 @@ function Userpage({ authenticated, user }) {
                                 .then(response => {
                                     return response.json();
                                 })
-                            ser.push(<p>delegated:{delegations[i].delegated}, service: {service.decoded}</p>);
+                            ser.push(<p><b>Delegated:</b> {delegations[i].delegated}<br/><b>Service:</b> {service.decoded}</p>);
 
                         }
                     }
@@ -335,10 +335,7 @@ function Userpage({ authenticated, user }) {
 
                 })
                 .catch((err) => { console.log("error in delete delegation"); console.log(err) });
-
-
         }
-
     }
 
     return (
@@ -407,7 +404,7 @@ function Userpage({ authenticated, user }) {
                 </form>
                 {showDelegations && (
                     <div className="modal">
-                        <div className="modal-content" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div className="modal-content">
                             {delegations}
                             <button className="modal-close" onClick={() => setShowDelegations(false)}>Ok</button>
                         </div>
