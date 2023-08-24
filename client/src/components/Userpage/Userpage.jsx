@@ -31,7 +31,7 @@ function Userpage({ authenticated, user }) {
                             vat: institutions[i].vat,
                             address: institutions[i].address
                         }
-                        sup.push(<option value={JSON.stringify(value)} >{institutions[i].name} </option>);
+                        sup.push(<option key={i} value={JSON.stringify(value)}>{institutions[i].name}</option>);
                     }
                     setOptions(sup);
 
@@ -50,7 +50,7 @@ function Userpage({ authenticated, user }) {
                         .then((res) => {
                             let sup = [];
                             for (let i = 0; i < res.services.length; i++) {
-                                sup.push(<option value={res.services[i]} >{res.services[i]} </option>);
+                                sup.push(<option key={i} value={res.services[i]}>{res.services[i]}</option>);
                             }
                             setServices(sup);
                             setServices1(sup);
@@ -270,7 +270,7 @@ function Userpage({ authenticated, user }) {
                                 .then(response => {
                                     return response.json();
                                 })
-                            ser.push(<p><b>Delegated:</b> {delegations[i].delegated}<br/><b>Service:</b> {service.decoded}</p>);
+                                ser.push(<p key={`${i}-${j}`}><b>Delegated:</b> {delegations[i].delegated}<br/><b>Service:</b> {service.decoded}</p>);
 
                         }
                     }
