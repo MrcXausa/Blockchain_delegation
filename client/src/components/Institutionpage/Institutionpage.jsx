@@ -134,7 +134,7 @@ function Institutionpage({authenticated,institution}){
             <form onSubmit={handleSubmit1}>
                 <h1>Add a service</h1>
                 <br />
-                <label>service name:</label>
+                <label>Service Name</label>
                 <br />
                 <input type="text" name="service" />
                 <br />
@@ -144,7 +144,7 @@ function Institutionpage({authenticated,institution}){
             <form onSubmit={handleFormViewDelegations}>
                 <h1>View delegations</h1>
                 <br></br>
-                <label>insert address:</label>
+                <label>Insert Address</label>
                 <br />
                 <input type="text" name="address" />
                 <br />

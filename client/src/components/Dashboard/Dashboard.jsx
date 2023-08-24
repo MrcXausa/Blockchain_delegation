@@ -15,7 +15,7 @@ export default function Dashboard({ setUser, setInstitution, setLoginUser, setLo
           setLoginUser={setLoginUser}
           setLoginInstitution={setLoginInstitution}
         />
-        <hr/>
+        <p/>
         <Subscribe
           className="subscribe-form" 
           setLoginUser={setLoginUser}
