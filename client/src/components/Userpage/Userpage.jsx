@@ -97,34 +97,23 @@ function Userpage({ authenticated, user }) {
                 if(accounts[0]===user.address){
                     contract.events.debug(options, (error, event) => {
                         if (error) {
-                            console.error("Error:", error);
-                            return;
+                          console.error("Error:", error);
+                          return;
                         }
-
+                      
                         // Handle the event data
                         console.log("Event received:", event.returnValues);
                       })
                     .on("data", (event) => {
-                    if(event.code==="delegation alredy exists")
-                        alert("delegation alredy exists");
-                    console.log(event);
+                        if(event.code==="delegation alredy exists")
+                            alert("delegation alredy exists");
+                        console.log(event);
                     })
                     contract.methods.delegate(address,institutionAddress,encodedservice).send({ from: accounts[0] })
                     .then(()=>{
                         alert("delegation approved");
                     })
-                        .on("data", (event) => {
-                            if (event.code === "delegation alredy exists")
-                                alert("delegation alredy exists");
-                            console.log(event);
-                        })
-                    contract.methods.delegate(address, institutionAddress, encodedservice).send({ from: accounts[0] })
-                        .then(() => {
-                            alert("delegation approved");
-                        })
                 }
-                else
-                    alert("wrong account on metamask");
             }
             else
                 alert("service not found in the contract");
