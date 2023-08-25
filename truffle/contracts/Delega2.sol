@@ -112,7 +112,6 @@ contract Delega2 {
     function institutionDelegations(address user) public view returns (returnValue[] memory){
         require(authorizedInstitutions[msg.sender],"invalid institution");      //check if the institution addres was added
         require(authorizedUsers[user],"unauthorized user");                     //check if the user already exist
-
         uint AddressesLength= users[user].institutions[msg.sender].delegatedAddresses.length;
 
         returnValue[] memory ret = new returnValue[] (AddressesLength);

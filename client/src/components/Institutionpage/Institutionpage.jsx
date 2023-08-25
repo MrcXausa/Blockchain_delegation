@@ -93,9 +93,9 @@ function Institutionpage({authenticated,institution}){
                     services: delegation.services,
                 }));
                 let ser=[];
-                for(let i=0;i<delegations.length;i++){
-                    for(let j=0;j<delegations[i].services.length;j++){
-                        console.log("service encoded= "+delegations[i].services[j]);
+                for(let i=0; i<delegations.length; i++){
+                    for(let j=0; j<delegations[i].services.length; j++){
+                        console.log("service encoded = "+delegations[i].services[j]);
                         
                         let toBeSent={
                             vat:vat,
@@ -114,7 +114,8 @@ function Institutionpage({authenticated,institution}){
                             
                         })
                         console.log(service);
-                        ser.push(<p>delegated:{delegations[i].delegated}, service: {service.decoded}</p>);
+                        ser.push(<p key={`${i}-${j}`}>delegated: {delegations[i].delegated}, service: {service.decoded}</p>);
+
                         
                     }
                 }
@@ -134,21 +135,21 @@ function Institutionpage({authenticated,institution}){
             <form onSubmit={handleSubmit1}>
                 <h1>Add a service</h1>
                 <br />
-                <label>service name:</label>
+                <label>Service Name</label>
                 <br />
                 <input type="text" name="service" />
                 <br />
-                <button type="submit">store</button>
+                <button type="submit">Store</button>
             </form>
             <br />
             <form onSubmit={handleFormViewDelegations}>
                 <h1>View delegations</h1>
                 <br></br>
-                <label>insert address:</label>
+                <label>Insert Address</label>
                 <br />
                 <input type="text" name="address" />
                 <br />
-                <button type="submit">view</button>
+                <button type="submit">View</button>
             </form>
             {delegations}
         </div>
