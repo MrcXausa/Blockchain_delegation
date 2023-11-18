@@ -7,9 +7,8 @@ const institutionSchema = new Schema({
   email: String,
   password: String,
   services: [String],
-  simmetrickey: String,
-  address:String,
-  iv:String
+  hashservices: [String],
+  address:String
 }, {
     collection: 'institutions'
 });

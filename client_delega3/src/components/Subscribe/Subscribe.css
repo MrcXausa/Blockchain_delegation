@@ -1,0 +1,56 @@
+.begin-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form {
+    text-align: center;
+}
+
+/* For RegisterUser.jsx and RegisterInstitution.jsx */
+
+    .user-institution-register-form h1 { /* title */
+    font-size: 18px;
+    margin-bottom: 20px;
+    }
+
+    .user-institution-register-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
+
+    .user-institution-register-form label {
+    font-size: 12px; /* labels */
+    margin-bottom: 3px;
+    }
+
+    .user-institution-register-form input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    }
+
+    .user-institution-register-form button {
+    padding: 10px 30px;
+    margin-top: 10px; /* Add margin to create space between buttons */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    }
+
+    .user-institution-register-form button:hover {
+    background-color: #0056b3;
+    }
+
+    .user-institution-register-form u {
+    display: block;
+    margin-top: 20px;
+    font-weight: bold;
+    }
