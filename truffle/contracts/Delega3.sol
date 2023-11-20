@@ -69,7 +69,7 @@ contract Delega3 is DelegationStorage3{
         return users[msg.sender][institution].services[hash(service)].isDelegated[delegated];  
     }
 
-    function userDelegations(address institution) public returns (returnValue[] memory) { 
+    function userDelegations(address institution) public view returns (returnValue[] memory) { 
         require(authorizedUsers[msg.sender],"unauthorized user");               //check if the user already exist
         require(authorizedInstitutions[institution],"invalid institution");     //check if the institution addres was added
 
@@ -94,7 +94,6 @@ contract Delega3 is DelegationStorage3{
                 address temp=users[msg.sender][institution].services[service].delegatedAddresses[j];
 
                 if(users[msg.sender][institution].services[service].isDelegated[temp]){
-                    emit debugBytes32(service);
                     ret[i].delegated=temp;
                     ret[i].services=service;
                 }
