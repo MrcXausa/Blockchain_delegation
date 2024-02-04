@@ -109,13 +109,14 @@ contract Delega3 is DelegationStorage3{
     function institutionDelegations(address user) public view returns (returnValue[] memory){
         require(authorizedInstitutions[msg.sender],"invalid institution");      //check if the institution addres was added
         require(authorizedUsers[user],"unauthorized user");                     //check if the user already exist
+        
+        //cycle to get the length of the result array
         uint length=0;
-
         for (uint i = 0; i < users[user][msg.sender].allServices.length; i++) {
 
             bytes32 service=users[user][msg.sender].allServices[i];
-            length+=users[user][msg.sender].services[service].delegatedAddresses.length;
-            
+            length+=users[user][msg.sender].services[service].delegationAmount;
+
         }
 
         returnValue[] memory ret = new returnValue[] (length);
