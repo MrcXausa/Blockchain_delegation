@@ -9,21 +9,19 @@ contract Delega2 {
     //only account allowed to add users
     address owner;
 
-    struct Services {
-        //represent the services of an institution delegated to every single delegated
-        mapping(bytes32 => bool) serviceIsPresent; //mapping to check if a service is present fastly
-        mapping(bytes32 => uint) serviceIndex; //mapping to get immediately the services indexes
-        string[] services; //encrypted strings array with all the services delegated
-        address delegated; //address of the delegated
+    struct Services {                                   //represent the services of an institution delegated to every single delegated
+        mapping(bytes32 => bool) serviceIsPresent;      //mapping to check if a service is present fastly
+        mapping(bytes32 => uint) serviceIndex;          //mapping to get immediately the services indexes
+        string[] services;                              //encrypted strings array with all the services delegated
+        address delegated;                              //address of the delegated
     }
 
-    struct Delegateds {
-        //represents the delegated for every single institution
-        mapping(address => Services) delegateds; //mapping with all the delegateds of an institution for a user
-        mapping(address => bool) addressIsPresent; //mapping to check if an address is present fastly
-        mapping(address => uint) delegatedIndex; //mapping to get immediately the addresses indexes
-        address[] delegatedAddresses; //all the addresses a user dalegated for at least one service
-        uint numberOfDelegations; //keeps track of how many elegations a user has done for an institution
+    struct Delegateds {                                 //represents the delegated for every single institution
+        mapping(address => Services) delegateds;        //mapping with all the delegateds of an institution for a user
+        mapping(address => bool) addressIsPresent;      //mapping to check if an address is present fastly
+        mapping(address => uint) delegatedIndex;        //mapping to get immediately the addresses indexes
+        address[] delegatedAddresses;                   //all the addresses a user dalegated for at least one service
+        uint numberOfDelegations;                       //keeps track of how many elegations a user has done for an institution
     }
 
     //users' delegations
